@@ -84,18 +84,20 @@ class AttentionFeatures(nn.Module):
     def __init__(self, in_channels, nparts=0):
         super(AttentionFeatures, self).__init__()
         self.nparts = nparts
-        self.conv1 = nn.Conv2d(in_channels, self.nparts, kernel_size=1, stride=1, bias=True)
-        # self.conv1 = conv1x1(in_channels, self.nparts)
+        # self.conv1 = nn.Conv2d(in_channels, self.nparts, kernel_size=1, stride=1, bias=True)
+        self.conv1 = conv1x1(in_channels, self.nparts)
         self.gap = nn.AdaptiveAvgPool2d((1,1))
         self.softmax = nn.Softmax(dim=1)
         self.relu = nn.ReLU(True)
         self.sigmoid = nn.Sigmoid()
-        self.weight = nn.Parameter(torch.tensor(1.0))
-        self.bias = nn.Parameter(torch.tensor(0.0))
+        # self.weight = nn.Parameter(torch.tensor(1.0))
+        # self.bias = nn.Parameter(torch.tensor(0.0))
+        
         
 
     def forward(self, x):
-
+        
+        self.relu(self.conv1.weight.data)
         # pdb.set_trace()
         # x: nbatch * nchannel * height * width
         nbatch, nchannel, height, width = x.shape
@@ -104,15 +106,16 @@ class AttentionFeatures(nn.Module):
         # normalization
         # maps = self.softmax(maps) # softmax normalization
         # maps = torch.div(maps, torch.norm(maps, dim=1, keepdim=True))   # l2 norm
-        # maps = torch.div(maps, torch.max(maps, dim=1, keepdim=True)[0]+eps) # l1 norm
-        maps = self.sigmoid(maps)
+        maps = torch.div(maps, torch.max(torch.abs(maps), dim=1, keepdim=True)[0]+eps) # l1 norm
+        # maps = self.sigmoid(maps)
         # maps = SoftSigmoid(maps, self.weight, self.bias)
+        
         
         x_view = x.view(nbatch, nchannel, -1) # nbatch, nchannel, height*width
 
         # attention pooling features
         x = torch.div(torch.bmm(x_view, maps).view(nbatch, self.nparts, nchannel), height*width)  # nbatch * nparts * nchannel
-
+        # pdb.set_trace()
         # return attention features, combination weights, attention maps
         return x, torch.squeeze(self.conv1.weight), maps.view(nbatch, self.nparts, height, width)
 
@@ -310,7 +313,7 @@ class ResNet(nn.Module):
         
         if self.attention:
 
-            semantic4 = torchf.interpolate(self.layer4_filter(x), 14, mode='bilinear')
+            semantic4 = torchf.interpolate(self.layer4_filter(x), 14)
             semantic34 = self.layer3_smoother(semantic3+semantic4)
 
             # x_clone = x.clone()

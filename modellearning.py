@@ -88,6 +88,10 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
             running_reg_loss = 0.0
             running_corrects = 0.0
 
+            running_corrects_global = 0.0
+            running_corrects_part1 = 0.0
+            running_corrects_part2 = 0.0
+
             for inputs, labels in dataloader[phase]:
                 #pdb.set_trace()
                 inputs = inputs.to(device)
@@ -101,22 +105,33 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
                 with torch.set_grad_enabled(phase == 'trainval'):
 
                     if attention_flag:
+                        # pdb.set_trace()
                         outputs, attention_weights, _ = model(inputs)
                         logits = torch.sum(outputs, dim=0)
                         # prob = logits.clone()
 
-                        
+                        ############################################################## prediction
                         # compute prediction for each branch
                         prob_global = softmax(torch.squeeze(outputs[0]))
                         prob_part1 = softmax(torch.squeeze(outputs[1]))
                         prob_part2 = softmax(torch.squeeze(outputs[2]))
-                        prob = torch.stack([prob_global, prob_part1, prob_part2], dim=0).max(dim=0)[0]
+                        # prob = torch.stack([prob_global, prob_part1, prob_part2], dim=0).max(dim=0)[0]
+                        prob = softmax(logits)
 
-                        cls_loss_global = criterion[0](torch.squeeze(outputs[0]), labels)
-                        cls_loss_part1 = criterion[0](torch.squeeze(outputs[1]), labels)
-                        cls_loss_part2 = criterion[0](torch.squeeze(outputs[2]), labels)
-                        cls_loss = cls_loss_global + cls_loss_part1 + cls_loss_part2
-                        
+                        _, preds_global = torch.max(prob_global, 1) 
+                        _, preds_part1 = torch.max(prob_part1, 1) 
+                        _, preds_part2 = torch.max(prob_part2, 1) 
+
+                        cls_loss = criterion[0](logits, labels)
+                        # cls_loss_part1 = criterion[0](torch.squeeze(outputs[1]), labels)
+                        # cls_loss_part2 = criterion[0](torch.squeeze(outputs[2]), labels)
+                        # cls_loss = cls_loss_global 
+
+                        ################################################################# regularization
+                        # soft_loss_part1 = SoftCrossEntropy(prob_global, prob_part1)
+                        # soft_loss_part2 = SoftCrossEntropy(prob_global, prob_part2)
+                        # soft_loss = soft_loss_part1 + soft_loss_part2
+                     
 
                         log_prob_part1 = logsoftmax(torch.squeeze(outputs[1]))
                         log_prob_part2 = logsoftmax(torch.squeeze(outputs[2]))
@@ -124,13 +139,11 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
                         klloss_part2 = kldiv(log_prob_part2, prob_global)
                         klloss = klloss_part1 + klloss_part2
 
-
                         # reg loss
                         sparse_reg_loss = criterion[1](attention_weights)
                         # similarity_reg_loss = criterion[2](attention_weights)
                         reg_loss = sparse_reg_loss + klloss
 
-                        
 
                     else:
                         outputs = model(inputs)
@@ -155,6 +168,10 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
                 running_reg_loss += (reg_loss.item()) * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
 
+                running_corrects_global += torch.sum(preds_global == labels.data)
+                running_corrects_part1 += torch.sum(preds_part1 == labels.data)
+                running_corrects_part2 += torch.sum(preds_part2 == labels.data)
+
                 # log variables
                 global_step += 1
                 if global_step % 100 == 1 and writer is not None and phase is 'trainval':
@@ -162,12 +179,13 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
                     writer.add_scalar('running loss/running_train_loss', batch_loss, global_step)
                     # writer.add_scalar('running loss/running_sim_reg_loss', similarity_reg_loss, global_step)
                     writer.add_scalar('running loss/running_sps_reg_loss', sparse_reg_loss, global_step)
+                    # writer.add_scalar('running loss/running_soft_part1_loss', soft_loss_part1, global_step)
+                    # writer.add_scalar('running loss/running_soft_part2_loss', soft_loss_part2, global_step)
                     writer.add_scalar('running loss/running_kl_part1_loss', klloss_part1, global_step)
                     writer.add_scalar('running loss/running_kl_part2_loss', klloss_part2, global_step)
-                    writer.add_scalar('running loss/running_kl_reg_loss', klloss, global_step)
-                    writer.add_scalar('running loss/running_cl_global_reg_loss', cls_loss_global, global_step)
-                    writer.add_scalar('running loss/running_cl_part1_reg_loss', cls_loss_part1, global_step)
-                    writer.add_scalar('running loss/running_cl_part2_reg_loss', cls_loss_part2, global_step)
+                    writer.add_scalar('running loss/running_cl_loss', cls_loss, global_step)
+                    # writer.add_scalar('running loss/running_cl_part1_reg_loss', cls_loss_part1, global_step)
+                    # writer.add_scalar('running loss/running_cl_part2_reg_loss', cls_loss_part2, global_step)
                     # pdb.set_trace()
                     for name, param in model.named_parameters():
                         writer.add_histogram('params_in_running/'+name, param.data.clone().cpu().numpy(), global_step)     # global_step
@@ -180,16 +198,26 @@ def train(model, dataloader, criterion, optimizer, scheduler, datasetname=None, 
             epoch_loss = (running_cls_loss + running_reg_loss) / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
+            epoch_acc_global = running_corrects_global.double() / dataset_sizes[phase]
+            epoch_acc_part1 = running_corrects_part1.double() / dataset_sizes[phase]
+            epoch_acc_part2 = running_corrects_part2.double() / dataset_sizes[phase]
+
             # log variables for each epoch
             if writer is not None:
                 if phase is 'trainval':
                     writer.add_scalar('epoch loss/train_epoch_loss', epoch_loss, epoch)        # global_step
                     writer.add_scalar('accuracy/train_epoch_acc', epoch_acc, epoch)          # global_step
+                    writer.add_scalar('accuracy/train_epoch_global_acc', epoch_acc_global, epoch) 
+                    writer.add_scalar('accuracy/train_epoch_part1_acc', epoch_acc_part1, epoch) 
+                    writer.add_scalar('accuracy/train_epoch_part2_acc', epoch_acc_part2, epoch) 
                     for name, param in model.named_parameters():
                         writer.add_histogram('params_in_epoch/'+name, param.data.clone().cpu().numpy(), epoch)     # global_step
                 elif phase is 'test':
                     writer.add_scalar('epoch loss/eval_epoch_loss', epoch_loss, epoch)         # global_step_resume
                     writer.add_scalar('accuracy/eval_epoch_acc', epoch_acc, epoch)          # global_step_resume
+                    writer.add_scalar('accuracy/eval_epoch_global_acc', epoch_acc_global, epoch) 
+                    writer.add_scalar('accuracy/eval_epoch_part1_acc', epoch_acc_part1, epoch) 
+                    writer.add_scalar('accuracy/eval_epoch_part2_acc', epoch_acc_part2, epoch)
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc), file=output_log_file)
             if phase == 'test': print('\n', file=output_log_file)
