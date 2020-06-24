@@ -4,7 +4,7 @@ This is PyTorch implementation of our paper ["Learning Semantically Enhanced Fea
 
 ## Appoach
 
-![alt text](https://github.com/cswluo/SEF/blob/master/sef.pdf)
+![alt text](https://github.com/cswluo/SEF/blob/master/sef.png)
 
 ## Requirements
 
