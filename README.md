@@ -16,9 +16,9 @@ This is PyTorch implementation of our paper ["Learning Semantically Enhanced Fea
 ## Learning and Evaluation
 A "x-imdb.py" is provided for each dataset to generate Python pickle files, which are then used to prepare train/val/trainval/test data. Run "x-imdb.py" in the folder of your dataset to generate corresponding pickle file (imdb.pkl) should be the very first step.
 
-- demo.py is used to train your own SEF model from scratch.
+- main.py trains your own SEF model.
 
-- prediction.py outputs classification accuracy by employing pretrained SEF models.   
+- eval.py outputs classification accuracy by employing pretrained SEF models.   
 
 Due to the random generation of train/val/test data on some datasets, the classification accuracy may have a bit fluctuation but it should be in a reasonable range.
 
