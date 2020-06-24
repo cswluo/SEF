@@ -1,6 +1,7 @@
 # SEF
 This is PyTorch implementation of our paper ["Learning Semantically Enhanced Feature for Fine-Grained Image Classification"](about:blank). We experimented on 4 fine-grained benchmark datasets --- CUB-200-2011, Stanford Cars, Stanford Dogs, and VGG-Aircraft. You should first download these datasets from their project homepages before runing SEF.
 
+**SEF can achieve comparable performance to the state-of-the-art methods with considerably less computation cost, training epochs, and only about 1.7% more parameters than its ResNet-50 backbone.**
 
 ## Appoach
 
@@ -22,7 +23,7 @@ A "x-imdb.py" is provided for each dataset to generate Python pickle files, whic
 
 Due to the random generation of train/val/test data on some datasets, the classification accuracy may have a bit fluctuation but it should be in a reasonable range.
 
-The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r-mP0mQop20bSGnau6SUGg) with code `i5wk`. 
+The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r-mP0mQop20bSGnau6SUGg) with code **`i5wk`**. 
 
 ## Results
 
