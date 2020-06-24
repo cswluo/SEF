@@ -28,7 +28,7 @@ The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r
 ## Results
 
 ### Accuracy
-SEF-18 and SEF-50 are results from different backbones (ResNet-18 and ResNet-50)
+SEF-18 and SEF-50 are results of models with different backbones (ResNet-18 and ResNet-50)
 |              |        SEF-18    | SEF-50 |
 |:-------------|:---------------:|:----------------:|
 |CUB-200-2011  |84.8%            |87.3%             |
@@ -37,8 +37,10 @@ SEF-18 and SEF-50 are results from different backbones (ResNet-18 and ResNet-50)
 |VGG-Aircraft  |89.3%            |92.1%             |
 
 ### Visualization
-![alt text](https://github.com/cswluo/SEF/blob/master/figs/corr.png)
-![alt text](https://github.com/cswluo/SEF/blob/master/figs/visualization.png)
+![correlation matrices](https://github.com/cswluo/SEF/blob/master/figs/corr.png)
+
+![visualization](https://github.com/cswluo/SEF/blob/master/figs/visualization.png)
+
 ## Citation
 ```
 @inproceedings{sef@luowei,
