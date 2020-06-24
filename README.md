@@ -4,7 +4,7 @@ This is PyTorch implementation of our paper ["Learning Semantically Enhanced Fea
 
 ## Appoach
 
-![alt text](https://github.com/cswluo/SEF/blob/8d9b0a4744d609c692345a054d87c352ff7278b2/sef.png)
+![alt text](https://github.com/cswluo/SEF/blob/master/figs/sef.png)
 
 ## Requirements
 
@@ -26,6 +26,7 @@ The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r
 
 ## Results
 
+### Accuracy
 SEF-18 and SEF-50 are results from different backbones (ResNet-18 and ResNet-50)
 |              |        SEF-18    | SEF-50 |
 |:-------------|:---------------:|:----------------:|
@@ -34,6 +35,9 @@ SEF-18 and SEF-50 are results from different backbones (ResNet-18 and ResNet-50)
 |Stanford Dogs |83.1%            |88.8%             |
 |VGG-Aircraft  |89.3%            |92.1%             |
 
+### Visualization
+![alt text](https://github.com/cswluo/SEF/blob/master/figs/corr.png)
+![alt text](https://github.com/cswluo/SEF/blob/master/figs/visualization.png)
 ## Citation
 ```
 @inproceedings{sef@luowei,
