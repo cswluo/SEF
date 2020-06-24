@@ -30,8 +30,8 @@ SEF-18 and SEF-50 are results from different backbones (ResNet-18 and ResNet-50)
 |              |        SEF-18    | SEF-50 |
 |:-------------|:---------------:|:----------------:|
 |CUB-200-2011  |84.8%            |87.3%             |
-|Stanford Cars |83.1%            |94.0%             |
-|Stanford Dogs |91.8%            |88.8%             |
+|Stanford Cars |91.8%            |94.0%             |
+|Stanford Dogs |83.1%            |88.8%             |
 |VGG-Aircraft  |89.3%            |92.1%             |
 
 ## Citation
