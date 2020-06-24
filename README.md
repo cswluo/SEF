@@ -22,7 +22,7 @@ A "x-imdb.py" is provided for each dataset to generate Python pickle files, whic
 
 Due to the random generation of train/val/test data on some datasets, the classification accuracy may have a bit fluctuation but it should be in a reasonable range.
 
-The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r-mP0mQop20bSGnau6SUGg) with code `javascript i5wk`. 
+The pretrained SEF models can be download from [HERE](https://pan.baidu.com/s/1r-mP0mQop20bSGnau6SUGg) with code `i5wk`. 
 
 ## Results
 
