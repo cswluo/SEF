@@ -1,5 +1,5 @@
 # SEF
-This is PyTorch implementation of our paper ["Learning Semantically Enhanced Feature for Fine-Grained Image Classification"](about:blank). We experimented on 4 fine-grained benchmark datasets --- CUB-200-2011, Stanford Cars, Stanford Dogs, and VGG-Aircraft. You should first download these datasets from their project homepages before runing SEF.
+This is PyTorch implementation of our paper **["Learning Semantically Enhanced Feature for Fine-Grained Image Classification"](https://arxiv.org/abs/2006.13457)**. We experimented on 4 fine-grained benchmark datasets --- CUB-200-2011, Stanford Cars, Stanford Dogs, and VGG-Aircraft. You should first download these datasets from their project homepages before runing SEF.
 
 **SEF can achieve comparable performance to the state-of-the-art methods with considerably less computation cost and training epochs and, only about 1.7% more parameters than its ResNet-50 backbone.**
 
@@ -46,7 +46,7 @@ SEF-18 and SEF-50 are results of models with different backbones (ResNet-18 and 
 @inproceedings{sef@luowei,
 author = {Wei Luo and Hengmin Zhang and Jun Li and Xiu-Shen Wei},
 title = {Learning Semantically Enhanced Feature for Fine-Grained Image Classification},
-booktitle = {arXiv},
+booktitle = {arXiv preprint arXiv:2006.13457},
 year = {2020},
 }
 ```
